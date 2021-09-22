@@ -2,12 +2,17 @@ import pandas as pd
 import numpy as np
 import glob
 import os
+import timeit
 
 #Import data set from folder
-os.chdir("/home/aaronhaag/EW/EffectivelyWild/Games")
-extension = "*"
-all_filenames = [i for i in glob.glob('*.{}'.format(extension))]
-df = pd.concat([pd.read_csv(f,header = None, names=['Type','Info1', 'Info2', 'Info3', 'Info4', 'Info5', 'Info6', 'Info7']) for f in all_filenames])
+#os.chdir("/home/aaronhaag/EW/EffectivelyWild/Games")
+#extension = "*"
+#all_filenames = [i for i in glob.glob('*.{}'.format(extension))]
+#df = pd.concat([pd.read_csv(f,header = None, names=['Type','Info1', 'Info2', 'Info3', 'Info4', 'Info5', 'Info6', 'Info7']) for f in all_filenames])
+
+#Set Start Time
+start = timeit.timeit()
+print("started")
 
 #Set up global variables
 game_id_list = []
@@ -18,7 +23,7 @@ number_of_homers = []
 number_of_pitchers = []
 
 #Import Data Set from CSV
-#df = pd.read_csv('gameone.csv', header = None, names=['Type','Info1', 'Info2', 'Info3', 'Info4', 'Info5', 'Info6', 'Info7'])
+df = pd.read_csv('Games/2016CHN.EVN', header = None, names=['Type','Info1', 'Info2', 'Info3', 'Info4', 'Info5', 'Info6', 'Info7'])
 
 #Set the Home Pitcher
 def home_pitcher(row, hap):
@@ -68,8 +73,6 @@ df.insert(1, "Pitcher", active_pitcher_list, True)
 #Create dataframes for Games and Plays
 games = df.loc[df["Type"] == "id", "GameId"]
 plays = df.loc[df["Type"] == "play", ["GameId", "Pitcher", "Info1", "Info2", "Info3", "Info4", "Info5", "Info6"]]
-print(games.head())
-print(plays.head())
 
 #Create a dataframe for only Home Runs
 plays = plays.replace('NAN', np.nan)
@@ -90,6 +93,8 @@ hr_hitters.insert(1, "Homeruns", number_of_homers, True)
 hr_hitters.insert(2, "Pitchers", number_of_pitchers, True)
 
 print(hr_hitters.head())
+end = timeit.timeit()
+print((end-start)*1000)
 
 #Export data frame to csv for testing
-hr_hitters.to_csv(r'/home/aaronhaag/EW/homerunratio.csv', header=True)
+#hr_hitters.to_csv(r'/home/aaronhaag/EW/homerunratio.csv', header=True)

@@ -92,4 +92,4 @@ hr_hitters.insert(2, "Pitchers", number_of_pitchers, True)
 print(hr_hitters.head())
 
 #Export data frame to csv for testing
-#df.to_csv(r'/home/aaronhaag/EffectivelyWild/gameOneWithId.csv', header=True)
+hr_hitters.to_csv(r'/home/aaronhaag/EW/homerunratio.csv', header=True)

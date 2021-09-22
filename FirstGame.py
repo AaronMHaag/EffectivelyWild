@@ -2,17 +2,16 @@ import pandas as pd
 import numpy as np
 import glob
 import os
-import timeit
+from timeit import default_timer as timer
+
+#Set Start Time
+start = timer()
 
 #Import data set from folder
 #os.chdir("/home/aaronhaag/EW/EffectivelyWild/Games")
 #extension = "*"
 #all_filenames = [i for i in glob.glob('*.{}'.format(extension))]
 #df = pd.concat([pd.read_csv(f,header = None, names=['Type','Info1', 'Info2', 'Info3', 'Info4', 'Info5', 'Info6', 'Info7']) for f in all_filenames])
-
-#Set Start Time
-start = timeit.timeit()
-print("started")
 
 #Set up global variables
 game_id_list = []
@@ -93,7 +92,7 @@ hr_hitters.insert(1, "Homeruns", number_of_homers, True)
 hr_hitters.insert(2, "Pitchers", number_of_pitchers, True)
 
 print(hr_hitters.head())
-end = timeit.timeit()
+end = timer()
 print((end-start)*1000)
 
 #Export data frame to csv for testing

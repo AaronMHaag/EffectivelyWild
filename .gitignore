@@ -129,9 +129,13 @@ dmypy.json
 .pyre/
 
 #Game Files
-.EVA
-.EVN
-.EDA
-.EDN
-.EVF
-.EDF
+*.EVA
+*.EVN
+*.EDA
+*.EDN
+*.EVF
+*.EDF
+*.ROS
+
+#Add 2016 Cubs Home Games for Testing
+!2016CHN.EVN

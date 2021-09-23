@@ -19,8 +19,6 @@ game_id_list = []
 active_pitcher_list = []
 hap = None
 aap = None
-number_of_homers = []
-number_of_pitchers = []
 
 #Import Data Set from CSV
 df = pd.read_csv('Games/2016CHN.EVN', header = None, names=['Type','Info1', 'Info2', 'Info3', 'Info4', 'Info5', 'Info6', 'Info7'])
@@ -48,17 +46,6 @@ def set_active_pitcher(row, hap, aap):
     if row.Type == "play" and row.Info2 == "1":
         return aap
 
-#Return the number of Homeruns for a player from teh homeruns dataframe
-def count_home_runs(row, hrs):
-    return sum(x == row.player_id for x in hrs['Info3'])
-
-#Return the number of Unique Pitchers for Each Home Run Hitter
-def count_pitchers(row, hrs):
-    hitter = hrs.loc[hrs['Info3'] == row.player_id]
-    pitchers = hitter.Pitcher.unique()
-    return len(pitchers)
-
-
 #Assign Game Id and Pitcher Id to Rows
 for line, row in enumerate(df.itertuples(), 1):
     if row.Type == "id":
@@ -70,31 +57,22 @@ for line, row in enumerate(df.itertuples(), 1):
 df.insert(0, "GameId", game_id_list, True)
 df.insert(1, "Pitcher", active_pitcher_list, True)
 
-#Create dataframes for Games and Plays
-games = df.loc[df["Type"] == "id", "GameId"]
-plays = df.loc[df["Type"] == "play", ["GameId", "Pitcher", "Info1", "Info2", "Info3", "Info4", "Info5", "Info6"]]
-
 #Create a dataframe for only Home Runs
-plays = plays.replace('NAN', np.nan)
-is_HR = plays['Info6'].str.contains(r'HR', na=True)
-homeruns = plays[is_HR]
+df = df.replace("NAN", np.nan)
+is_HR = (df["Info6"].str.contains(r'HR', na=True)) & (df["Type"] == "play")
+hrs = df[is_HR]
+homeruns = hrs[["Info3", "Pitcher"]].copy()
+
+#Count the number of Homeruns and pitchers wihtout iterating
+pitchers = homeruns.groupby("Info3").nunique("Pitcher").reset_index("Info3")
+hrCount = homeruns.groupby("Info3").size().to_frame(name="hrs").reset_index("Info3")
+pitchers.insert(1, "hrs", hrCount['hrs'], True)
+pitchers.rename(columns={"Info3": "PlayerId", "hrs":"Hrs", "Pitcher" : "Pitchers"}, inplace=True)
 
 
-#Create a dataframe containing one row for all players who have homered
-hr_hitters_list = homeruns.Info3.unique()
-hr_hitters = pd.DataFrame(hr_hitters_list)
-hr_hitters.columns = ['player_id']
-
-#Count the number of Homeruns for each player and pitchers for each player
-for line, row in enumerate(hr_hitters.itertuples(), 1):
-    number_of_homers.append(count_home_runs(row, homeruns))
-    number_of_pitchers.append(count_pitchers(row, homeruns))
-hr_hitters.insert(1, "Homeruns", number_of_homers, True)
-hr_hitters.insert(2, "Pitchers", number_of_pitchers, True)
-
-print(hr_hitters.head())
+print(pitchers.head())
 end = timer()
 print((end-start)*1000)
 
 #Export data frame to csv for testing
-#hr_hitters.to_csv(r'/home/aaronhaag/EW/homerunratio3.csv', header=True)
+#pitchers.to_csv(r'/home/aaronhaag/EW/homerunratio2.csv', header=True)

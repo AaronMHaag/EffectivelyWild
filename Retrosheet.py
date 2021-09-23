@@ -1,4 +1,7 @@
 %%timeit
+## This file consumes retrosheet data - information about the source file can be found here:
+##https://www.retrosheet.org/eventfile.htm
+
 import pandas as pd
 import numpy as np
 import glob
